@@ -1,0 +1,46 @@
+version: "3.9"
+
+
+services:
+
+  _base: &base
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: []
+    volumes:
+      - .:/code
+    environment: &base-environment
+      ENVIRONMENT: local
+      REDIS_URL: redis://redis:6379/1
+
+  bot: &bot
+    <<: *base
+    ports:
+      - "8009:8009"
+    entrypoint: ['docker/start.sh']
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  scheduler:
+    <<: *base
+    entrypoint: [ "docker/scheduler.sh" ]
+    depends_on:
+      - redis
+
+  poetry:
+    <<: *base
+    entrypoint: ["poetry"]
+
+  lint:
+    <<: *base
+    entrypoint: ["docker/lint.sh"]
+
+  lint-check:
+    <<: *base
+    entrypoint: [ "docker/lint_check.sh" ]

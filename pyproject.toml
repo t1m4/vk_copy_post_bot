@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "vk_watching_telegram_bot"
+version = "0.1.0"
+description = ""
+authors = []
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "^2.23.1"
+aiohttp = "^3.8.3"
+pydantic = {extras = ["dotenv"], version = "^1.10.2"}
+watchfiles = "^0.18.1"
+sentry-sdk = "^1.12.0"
+aioredis = "^2.0.1"
+celery = "^5.2.7"
+redis = "^4.4.0"
+
+[tool.poetry.dev-dependencies]
+pip-tools = "^6.5.1"
+black = "^22.3.0"
+flake8 = "^6.0.0"
+autoflake = "^2.0.0"
+mypy = "^0.942"
+isort = "^5.10.1"
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+exclude = 'app/migrations'
+strict = true
+# disable strict flags
+ignore_missing_imports = true
+disallow_subclassing_any = false
+warn_return_any = false
+ignore_errors = true
+
+
+[tool.coverage.report]
+omit = [
+    "*/tests/*",
+]
+
+[tool.autoflake]
+exclude = ["*migrations"]
