@@ -3,6 +3,13 @@ from celery.schedules import crontab
 
 from src.config import config
 
+
+# TODO finish
+# @signals.worker_process_shutdown.connect()
+# def stop_worker_process(*args: Any, **kwargs: Any) -> None:
+#     """Some job on worker stop"""
+#     asyncio.run(stop_services(dispatcher, vk_api_client, redis_client))
+
 celery_app = Celery(main="telegram_bot", broker=config.REDIS_URL)
 celery_app.autodiscover_tasks()
 celery_app.conf.beat_schedule = {

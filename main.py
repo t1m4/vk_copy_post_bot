@@ -20,6 +20,26 @@ from src.vk_api_client.api_client import VKClientAPI
 logger = logging.getLogger(__name__)
 
 
+# TODO finish it
+# # setup sentry
+# error_reporting.init(config.SENTRY_DSN, config.ENVIRONMENT)
+
+# # setup client api
+# aiohttp_session = aiohttp.ClientSession()
+# print(aiohttp_session)
+# vk_api_client = VKClientAPI(aiohttp_session, config.VK_ACCESS_TOKEN, config.VK_API_VERSION)
+
+# # setup redis api
+# redis_instance = aioredis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
+# redis_client = AsyncRedisClient(redis_instance)
+
+# # setup bot
+# storage = MemoryStorage()
+# bot = Bot(token=config.BOT_TOKEN, parse_mode="HTML")
+# dispatcher = Dispatcher(bot, storage=storage)
+# bot["config"] = config
+
+
 def register_all_middlewares(
     dp: Dispatcher, config: Config, vk_api_client: VKClientAPI, redis_client: AsyncRedisClient
 ):
@@ -57,7 +77,7 @@ async def start_services() -> Tuple[VKClientAPI, AsyncRedisClient, Dispatcher]:
     vk_api_client = VKClientAPI(aiohttp_session, config.VK_ACCESS_TOKEN, config.VK_API_VERSION)
 
     # setup redis api
-    redis_instance = await aioredis.from_url(config.REDIS_URL, decode_responses=True)
+    redis_instance = aioredis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, password=config.REDIS_PASSWORD, decode_responses=True)
     redis_client = AsyncRedisClient(redis_instance)
 
     # setup bot
@@ -87,8 +107,7 @@ async def init_bot(dispatcher: Dispatcher, vk_api_client: VKClientAPI, redis_cli
 
 async def main():
     logging.basicConfig(
-        # level=logging.ERROR,
-        level=logging.INFO,
+        level=logging.ERROR,
         format="%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s",
     )
     logger.info("Starting bot")
