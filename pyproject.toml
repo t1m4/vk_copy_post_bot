@@ -1,5 +1,5 @@
 [project]
-name = "starwars"
+name = "copy VK post telegram bot"
 requires-python = ">=3.10.8"
 
 [tool.poetry]
