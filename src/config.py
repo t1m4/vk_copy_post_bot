@@ -1,6 +1,11 @@
 from typing import List
 
-from pydantic import BaseSettings, Field, RedisDsn
+import aioredis
+from aiogram import Bot, Dispatcher
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from pydantic import BaseSettings, Field
+
+from src.redis_client.client import AsyncRedisClient
 
 
 class Config(BaseSettings):
@@ -19,4 +24,12 @@ class Config(BaseSettings):
     def REDIS_URL(self) -> str:
         return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
+
 config = Config(_env_file=".env", _env_file_encoding="utf-8")  # type: ignore
+redis_instance = aioredis.Redis(
+    host=config.REDIS_HOST, port=config.REDIS_PORT, password=config.REDIS_PASSWORD, decode_responses=True
+)
+redis_client = AsyncRedisClient(redis_instance)
+storage = MemoryStorage()
+bot = Bot(token=config.BOT_TOKEN, parse_mode="HTML")
+dispatcher = Dispatcher(bot, storage=storage)

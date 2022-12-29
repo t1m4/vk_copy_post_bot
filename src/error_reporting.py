@@ -3,7 +3,6 @@ from contextlib import contextmanager
 from typing import Any, Iterator
 
 import sentry_sdk
-
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 

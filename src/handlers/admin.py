@@ -2,12 +2,10 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import BotCommand, Chat, Message
 
-from src.redis_client.client import AsyncRedisClient
+from src.config import bot
 from src.services.admin_services import UserService
-from src.services.exceptions import UserDoesNotExist
+from src.services.exceptions import UserServiceException
 from src.states.user_post import UserPost
-from src.vk_api_client.api_client import VKClientAPI
-from src.vk_api_client.exceptions import VKAPIException
 from src.vk_api_client.models import User
 
 
@@ -20,11 +18,11 @@ async def start_add_new_post(message: Message):
     await message.answer("Please, send vk user link or just VK user id!")
 
 
-async def add_new_user(message: Message, state: FSMContext, api_client: VKClientAPI, redis_client: AsyncRedisClient):
-    service = UserService(message.text, api_client, redis_client)
+async def add_new_user(message: Message, state: FSMContext):
+    service = UserService(message.text)
     try:
         user: User = await service.validate_user()
-    except (UserDoesNotExist, VKAPIException):
+    except UserServiceException:
         await message.answer("There is not valid VK user id. Try again")
         return
     await state.update_data(user_id=user.id)
@@ -32,19 +30,17 @@ async def add_new_user(message: Message, state: FSMContext, api_client: VKClient
     await message.answer("Added {}! Please send telegram channel in format @username".format(user.first_name))
 
 
-async def admin_add_telegram_channel(
-    message: Message, state: FSMContext, api_client: VKClientAPI, dispatcher: Dispatcher, redis_client: AsyncRedisClient
-):
+async def admin_add_telegram_channel(message: Message, state: FSMContext):
     state_data = await state.get_data()
     text = message.text
     if text[0] != "@":
         await message.answer("There is not valid Telegram channel id. Try again")
         return
-    channel: Chat = await dispatcher.bot.get_chat(text)
-    service = UserService(text, api_client, redis_client)
+    channel: Chat = await bot.get_chat(text)
+    service = UserService(text)
     try:
         await service.add_telegram_channel(state_data["user_id"], channel.id)
-    except (UserDoesNotExist, VKAPIException):
+    except UserServiceException:
         await message.answer("There is not valid VK user id")
         return
     await state.finish()

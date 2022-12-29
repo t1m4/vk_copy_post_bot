@@ -8,7 +8,7 @@ from aiohttp.client_exceptions import ClientError
 from src.vk_api_client.exceptions import VKAPIException
 
 
-class VKClientAPI:
+class VKClient:
     VK_API_URL = "https://api.vk.com/method/"
     USER_GET_URL = VK_API_URL + "users.get/"
     WALL_GET_URL = VK_API_URL + "wall.get/"
@@ -27,8 +27,13 @@ class VKClientAPI:
         """Get json content from url"""
         timeout = timeout or self.DEFAULT_TIMEOUT
         params.update(self.auth_params)
+        kwargs = {}
+        if params:
+            kwargs["params"] = params
+        if timeout:
+            kwargs["timeout"] = timeout
         try:
-            response = await self.session.get(url, params=params, timeout=timeout)
+            response = await self.session.get(url, **kwargs)
         except (asyncio.TimeoutError, ClientError) as error:
             raise VKAPIException(str(error), 500)
         if response.status == 200:

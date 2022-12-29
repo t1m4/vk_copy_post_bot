@@ -2,7 +2,7 @@ import typing
 
 from aiogram.dispatcher.filters import BoundFilter
 
-from src.config import Config
+from src.config import config
 
 
 class AdminFilter(BoundFilter):
@@ -14,5 +14,4 @@ class AdminFilter(BoundFilter):
     async def check(self, message):
         if self.is_admin is None:
             return False
-        config: Config = message.bot.get("config")
         return (message.from_user.id in config.ADMIN_IDS) == self.is_admin

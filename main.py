@@ -1,95 +1,45 @@
 import asyncio
 import logging
-from typing import List, Tuple
+from typing import List
 
-import aiohttp
-import aioredis
-from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
 from src import error_reporting
-from src.config import Config, config
+from src.config import config, dispatcher, redis_client
 from src.filters.admin import AdminFilter
 from src.handlers.admin import register_admin
 from src.handlers.echo import register_echo
-from src.middlewares.environment import Middleware
-from src.redis_client.client import AsyncRedisClient
-from src.vk_api_client.api_client import VKClientAPI
-
-logger = logging.getLogger(__name__)
+from src.vk_api_client.services import vk_service
 
 
-# TODO finish it
-# # setup sentry
-# error_reporting.init(config.SENTRY_DSN, config.ENVIRONMENT)
-
-# # setup client api
-# aiohttp_session = aiohttp.ClientSession()
-# print(aiohttp_session)
-# vk_api_client = VKClientAPI(aiohttp_session, config.VK_ACCESS_TOKEN, config.VK_API_VERSION)
-
-# # setup redis api
-# redis_instance = aioredis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
-# redis_client = AsyncRedisClient(redis_instance)
-
-# # setup bot
-# storage = MemoryStorage()
-# bot = Bot(token=config.BOT_TOKEN, parse_mode="HTML")
-# dispatcher = Dispatcher(bot, storage=storage)
-# bot["config"] = config
+def register_all_filters():
+    dispatcher.filters_factory.bind(AdminFilter)
 
 
-def register_all_middlewares(
-    dp: Dispatcher, config: Config, vk_api_client: VKClientAPI, redis_client: AsyncRedisClient
-):
-    dp.setup_middleware(Middleware(dp, config, vk_api_client, redis_client))
-
-
-def register_all_filters(dp: Dispatcher):
-    dp.filters_factory.bind(AdminFilter)
-
-
-def register_all_handlers(dp: Dispatcher) -> List[BotCommand]:
+def register_all_handlers() -> List[BotCommand]:
     all_commands: List = []
     handlers = [register_admin, register_echo]
     for handler in handlers:
-        commands = handler(dp)
+        commands = handler(dispatcher)
         all_commands.extend(commands)
     return all_commands
 
 
-async def set_my_commands(dispatcher: Dispatcher, commands: List[BotCommand]):
+async def set_my_commands(commands: List[BotCommand]):
     await dispatcher.bot.set_my_commands(commands)
 
 
-async def on_startup_notify(dp: Dispatcher):
+async def on_startup_notify():
     for admin in config.ADMIN_IDS:
-        await dp.bot.send_message(admin, "Бот Запущен")
+        await dispatcher.bot.send_message(admin, "Бот Запущен")
 
 
-async def start_services() -> Tuple[VKClientAPI, AsyncRedisClient, Dispatcher]:
-    # setup sentry
-    error_reporting.init(config.SENTRY_DSN, config.ENVIRONMENT)
-
-    # setup client api
-    aiohttp_session = aiohttp.ClientSession()
-    vk_api_client = VKClientAPI(aiohttp_session, config.VK_ACCESS_TOKEN, config.VK_API_VERSION)
-
-    # setup redis api
-    redis_instance = aioredis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, password=config.REDIS_PASSWORD, decode_responses=True)
-    redis_client = AsyncRedisClient(redis_instance)
-
-    # setup bot
-    storage = MemoryStorage()
-    bot = Bot(token=config.BOT_TOKEN, parse_mode="HTML")
-    dispatcher = Dispatcher(bot, storage=storage)
-    bot["config"] = config
-    return vk_api_client, redis_client, dispatcher
+async def start_services():
+    await vk_service.start()
 
 
-async def stop_services(dispatcher: Dispatcher, vk_api_client: VKClientAPI, redis_client: AsyncRedisClient):
-    await vk_api_client.session.close()
+async def stop_services():
+    await vk_service.stop()
     await dispatcher.storage.close()
     await dispatcher.storage.wait_closed()
     session = await dispatcher.bot.get_session()
@@ -97,12 +47,11 @@ async def stop_services(dispatcher: Dispatcher, vk_api_client: VKClientAPI, redi
     await redis_client.redis.close()
 
 
-async def init_bot(dispatcher: Dispatcher, vk_api_client: VKClientAPI, redis_client: AsyncRedisClient):
-    register_all_middlewares(dispatcher, config, vk_api_client, redis_client)
-    register_all_filters(dispatcher)
-    commands = register_all_handlers(dispatcher)
-    await set_my_commands(dispatcher, commands)
-    await on_startup_notify(dispatcher)
+async def init_bot():
+    register_all_filters()
+    commands = register_all_handlers()
+    await set_my_commands(commands)
+    await on_startup_notify()
 
 
 async def main():
@@ -110,23 +59,22 @@ async def main():
         level=logging.ERROR,
         format="%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s",
     )
-    logger.info("Starting bot")
+    logging.info("Starting bot")
 
-    # set sentry
+    # setup
     error_reporting.init(config.SENTRY_DSN, config.ENVIRONMENT)
+    await start_services()
+    await init_bot()
 
-    vk_api_client, redis_client, dispatcher = await start_services()
-    await init_bot(dispatcher, vk_api_client, redis_client)
-
-    # start
+    # start bot
     try:
         await dispatcher.start_polling()
     finally:
-        await stop_services(dispatcher, vk_api_client, redis_client)
+        await stop_services()
 
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        logger.error("Bot stopped!")
+        logging.error("Bot stopped!")

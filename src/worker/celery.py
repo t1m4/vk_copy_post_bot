@@ -1,14 +1,28 @@
-from celery import Celery
+import asyncio
+from typing import Any
+
+from celery import Celery, signals
 from celery.schedules import crontab
 
+from main import start_services, stop_services
+from src import error_reporting
 from src.config import config
 
+celery_event_loop = asyncio.new_event_loop()
 
-# TODO finish
-# @signals.worker_process_shutdown.connect()
-# def stop_worker_process(*args: Any, **kwargs: Any) -> None:
-#     """Some job on worker stop"""
-#     asyncio.run(stop_services(dispatcher, vk_api_client, redis_client))
+
+@signals.worker_process_init.connect()
+def start_worker_process(*args: Any, **kwargs: Any) -> None:
+    """Some job on worker process start"""
+    error_reporting.init(config.SENTRY_DSN, config.ENVIRONMENT)
+    celery_event_loop.run_until_complete(start_services())
+
+
+@signals.worker_process_shutdown.connect()
+def stop_worker_process(*args: Any, **kwargs: Any) -> None:
+    """Some job on worker process stop"""
+    celery_event_loop.run_until_complete(stop_services())
+
 
 celery_app = Celery(main="telegram_bot", broker=config.REDIS_URL)
 celery_app.autodiscover_tasks()
