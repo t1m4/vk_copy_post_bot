@@ -13,7 +13,7 @@ class VKClient:
     USER_GET_URL = VK_API_URL + "users.get/"
     WALL_GET_URL = VK_API_URL + "wall.get/"
 
-    DEFAULT_TIMEOUT = 10
+    DEFAULT_TIMEOUT = 60
     DEFAULT_FILTER = "owner"
     DEFAULT_POSTS_COUNT = 1
 
