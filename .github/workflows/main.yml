@@ -34,6 +34,7 @@ jobs:
                 echo address $HOST_USER@$HOST_ADDRESS
                 echo $SSH_PRIVATE_KEY >> private_key
                 chmod 600 private_key
+                sed -i 's/^[ \t]*//' private_key
                 cat private_key
                 echo check valid
                 ssh-keygen -y -e -f private_key
