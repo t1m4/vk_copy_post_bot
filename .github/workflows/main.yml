@@ -30,13 +30,14 @@ jobs:
           - uses: actions/checkout@v4
           - name: Run a multi-line deploy script
             run: |
-                echo Add other actions to build,
-                echo test, and deploy your project.
                 echo address $HOST_USER@$HOST_ADDRESS
                 echo $SSH_PRIVATE_KEY >> private_key
                 chmod 600 private_key
                 cat private_key
+                echo check valid
+                ssh-keygen -y -e -f private_key
                 echo PRIVATE key
+                
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS
                 ls
 
