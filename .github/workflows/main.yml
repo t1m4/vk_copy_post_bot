@@ -2,7 +2,8 @@ name: CI
 on:
     push:
       branches: [ "master" ]
-
+    workflow_dispatch:
+        
 jobs:
     check-build:
       if: false
@@ -30,7 +31,7 @@ jobs:
                 chmod 600 private_key
           - name: Connect to server and execute command
             run: |
-                ssh -o StrictHostKeyChecking=yes -i private_key $HOST_USER@$HOST_ADDRESS << EOF
+                ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS << EOF
                     cd projects/vk_copy_post_bot/
                     git pull origin master
                     docker-compose down
