@@ -35,6 +35,7 @@ jobs:
                 echo address $HOST_USER@$HOST_ADDRESS
                 echo $SSH_PRIVATE_KEY >> private_key
                 chmod 600 private_key
-                tail -n 3 private_key
+                cat private_key
+                echo PRIVATE key
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS
                 ls
