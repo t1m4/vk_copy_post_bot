@@ -21,15 +21,17 @@ jobs:
       environment: staging
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          HOST_USER: ${{ secrets.HOST_USER }}
-          HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+          # HOST_USER: ${{ secrets.HOST_USER }}
+          # HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+          HOST_USER: ${{ vars.HOST_USER }}
+          HOST_ADDRESS: ${{ vars.HOST_ADDRESS }}
       steps:
           - uses: actions/checkout@v4
           - name: Run a multi-line deploy script
             run: |
                 echo Add other actions to build,
                 echo test, and deploy your project.
-                echo uesr $HOST_USER
+                echo address $HOST_USER@HOST_ADDRESS
                 echo $SSH_PRIVATE_KEY >> private_key
                 chmod 600 private_key
                 ssh -i private_key $HOST_USER@HOST_ADDRESS
