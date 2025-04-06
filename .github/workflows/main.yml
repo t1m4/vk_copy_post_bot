@@ -39,5 +39,7 @@ jobs:
                 echo Connect using ssh... 
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS << EOF
                     ls
+                    cd projects/vk_copy_post_bot/
+                    git pull origin master
                 EOF
 
