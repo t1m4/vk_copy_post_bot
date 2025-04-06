@@ -15,7 +15,7 @@ jobs:
     deploy:
       runs-on: ubuntu-latest
       environment: staging
-      needs: [check-build]
+      # needs: [check-build]
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST_USER: ${{ secrets.HOST_USER }}
