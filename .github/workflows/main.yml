@@ -32,8 +32,10 @@ jobs:
             run: |
                 ls
                 echo address $HOST_USER@$HOST_ADDRESS
+                echo '-----BEGIN OPENSSH PRIVATE KEY-----' > private_key
                 echo $SSH_PRIVATE_KEY >> private_key
-                sed -i 's/^[ \t]*//' private_key
+                echo '-----END OPENSSH PRIVATE KEY-----' >> private_key
+                # sed -i 's/^[ \t]*//' private_key
                 chmod 600 private_key
                 cat private_key
                 echo check valid
