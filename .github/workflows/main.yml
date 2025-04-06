@@ -35,11 +35,12 @@ jobs:
                 echo $SSH_PRIVATE_KEY >> private_key
                 echo '-----END OPENSSH PRIVATE KEY-----' >> private_key
                 chmod 600 private_key
-                cat private_key
                 echo Connect using ssh... 
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS << EOF
                     cd projects/vk_copy_post_bot/
                     git pull origin master
-                    sudo docker ps
+                    docker ps
+                    docker-compose stop bot
+                    docker-compose up -d bot
                 EOF
 
