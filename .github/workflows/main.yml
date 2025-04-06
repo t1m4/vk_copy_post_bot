@@ -3,6 +3,11 @@ on:
     push:
       branches: [ "master" ]
     workflow_dispatch:
+        inputs:
+          environment:
+            description: 'Environment to run tests against'
+            type: environment
+            required: true
         
 jobs:
     check-build:
@@ -21,10 +26,12 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST_USER: ${{ secrets.HOST_USER }}
           HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+          CUSTOM_ENV: ${{ inputs.environment }}
       steps:
           - uses: actions/checkout@v4
           - name: Load and create private key
             run: |
+                echo ENV = "$CUSTOM_ENV"
                 echo '-----BEGIN OPENSSH PRIVATE KEY-----' > private_key
                 echo $SSH_PRIVATE_KEY >> private_key
                 echo '-----END OPENSSH PRIVATE KEY-----' >> private_key
