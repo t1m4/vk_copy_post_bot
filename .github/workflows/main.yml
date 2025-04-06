@@ -37,6 +37,6 @@ jobs:
                 chmod 600 private_key
                 cat private_key
                 echo PRIVATE key
-                ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS
+                sudo ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS
                 ls
 
