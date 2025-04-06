@@ -19,10 +19,10 @@ jobs:
     my_deploy:
       runs-on: ubuntu-latest
       environment: staging
-      env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          HOST_USER: ${{ secrets.HOST_USER }}
-          HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+      # env:
+      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     HOST_USER: ${{ secrets.HOST_USER }}
+      #     HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
 
       steps:
           - uses: actions/checkout@v4
