@@ -20,28 +20,23 @@ jobs:
       runs-on: ubuntu-latest
       environment: staging
       env:
-          # SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          # HOST_USER: ${{ secrets.HOST_USER }}
-          # HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
-          SSH_PRIVATE_KEY: ${{ vars.SSH_PRIVATE_KEY }}
-          HOST_USER: ${{ vars.HOST_USER }}
-          HOST_ADDRESS: ${{ vars.HOST_ADDRESS }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST_USER: ${{ secrets.HOST_USER }}
+          HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+          # SSH_PRIVATE_KEY: ${{ vars.SSH_PRIVATE_KEY }}
+          # HOST_USER: ${{ vars.HOST_USER }}
+          # HOST_ADDRESS: ${{ vars.HOST_ADDRESS }}
       steps:
           - uses: actions/checkout@v4
           - name: Run a multi-line deploy script
             run: |
-                ls
-                echo address $HOST_USER@$HOST_ADDRESS
+                echo load private key
                 echo '-----BEGIN OPENSSH PRIVATE KEY-----' > private_key
                 echo $SSH_PRIVATE_KEY >> private_key
                 echo '-----END OPENSSH PRIVATE KEY-----' >> private_key
-                # sed -i 's/^[ \t]*//' private_key
                 chmod 600 private_key
                 cat private_key
-                echo check valid
-                ssh-keygen -y -e -f private_key
-                echo PRIVATE key
-                
+                echo Connect using ssh... 
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS << EOF
                     ls
                 EOF
