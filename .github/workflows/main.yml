@@ -19,11 +19,6 @@ jobs:
     my_deploy:
       runs-on: ubuntu-latest
       environment: staging
-      # env:
-      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     HOST_USER: ${{ secrets.HOST_USER }}
-      #     HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
-
       steps:
           - uses: actions/checkout@v4
           - name: Run a multi-line deploy script
@@ -33,4 +28,3 @@ jobs:
                 echo uesr $HOST_USER
                 echo user with env ${{ vars.HOST_USER }}
                 echo secret ${{ secrets.SSH_PRIVATE_KEY }}
-                
