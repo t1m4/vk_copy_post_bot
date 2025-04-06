@@ -23,9 +23,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST_USER: ${{ secrets.HOST_USER }}
           HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
-          # SSH_PRIVATE_KEY: ${{ vars.SSH_PRIVATE_KEY }}
-          # HOST_USER: ${{ vars.HOST_USER }}
-          # HOST_ADDRESS: ${{ vars.HOST_ADDRESS }}
       steps:
           - uses: actions/checkout@v4
           - name: Run a multi-line deploy script
@@ -40,7 +37,7 @@ jobs:
                     cd projects/vk_copy_post_bot/
                     git pull origin master
                     docker ps
-                    docker-compose stop bot
+                    docker-compose down
                     docker-compose up -d bot
                 EOF
 
