@@ -4,27 +4,27 @@ on:
       branches: [ "master" ]
 
 jobs:
-    # my_build_job:
-    #   runs-on: ubuntu-latest
-    #   steps:
-    #       - uses: actions/checkout@v4
-    
-    #       - name: Run a one-line script
-    #         run: echo Hello, world!
-    
-    #       - name: Run a multi-line script
-    #         run: |
-    #             echo Add other actions to build,
-    #             echo test, and deploy your project.
-    my_deploy:
+    my_build_job:
       runs-on: ubuntu-latest
-      environment: staging
       steps:
           - uses: actions/checkout@v4
-          - name: Run a multi-line deploy script
+    
+          - name: Run a one-line script
+            run: echo Hello, world!
+    
+          - name: Run a multi-line script
             run: |
                 echo Add other actions to build,
                 echo test, and deploy your project.
-                echo uesr $HOST_USER
-                echo user with env ${{ vars.HOST_USER }}
-                echo secret ${{ secrets.SSH_PRIVATE_KEY }}
+    # my_deploy:
+    #   runs-on: ubuntu-latest
+    #   environment: staging
+    #   steps:
+    #       - uses: actions/checkout@v4
+    #       - name: Run a multi-line deploy script
+    #         run: |
+    #             echo Add other actions to build,
+    #             echo test, and deploy your project.
+    #             echo uesr $HOST_USER
+    #             echo user with env ${{ vars.HOST_USER }}
+    #             echo secret ${{ secrets.SSH_PRIVATE_KEY }}
