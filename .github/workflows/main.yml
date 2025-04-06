@@ -18,7 +18,6 @@ jobs:
     #             echo test, and deploy your project.
     my_deploy:
       runs-on: ubuntu-latest
-      environment: staging
       steps:
           - uses: actions/checkout@v4
           - name: Run a multi-line deploy script
