@@ -31,7 +31,7 @@ jobs:
             run: |
                 echo Add other actions to build,
                 echo test, and deploy your project.
-                echo address $HOST_USER@HOST_ADDRESS
+                echo address $HOST_USER@$HOST_ADDRESS
                 echo $SSH_PRIVATE_KEY >> private_key
                 chmod 600 private_key
                 ssh -i private_key $HOST_USER@HOST_ADDRESS
