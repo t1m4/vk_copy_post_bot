@@ -4,19 +4,17 @@ on:
       branches: [ "master" ]
 
 jobs:
-    my_build_job:
+    check-build:
       runs-on: ubuntu-latest
       steps:
           - uses: actions/checkout@v4
     
-          - name: Run a one-line script
-            run: echo Hello, world!
-
-          - name: Build Docker image
+          - name: Check build docker image
             run: docker build .                
-    my_deploy:
+    deploy:
       runs-on: ubuntu-latest
       environment: staging
+      needs: [check-build]
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST_USER: ${{ secrets.HOST_USER }}
