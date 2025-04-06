@@ -33,5 +33,4 @@ jobs:
                 echo uesr $HOST_USER
                 echo user with env ${{ vars.HOST_USER }}
                 echo secret ${{ secrets.SSH_PRIVATE_KEY }}
-                echo secret address $HOST_ADDRESS
                 
