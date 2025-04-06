@@ -25,5 +25,6 @@ jobs:
                 echo Add other actions to build,
                 echo test, and deploy your project.
                 echo uesr $HOST_USER
+                echo user with env ${{ env.HOST_USER }}
                 echo secret ${SSH_PRIVATE_KEY:0:6}
                 echo secret ${{secrets.TEST}}
