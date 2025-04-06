@@ -68,3 +68,4 @@ Application consists of three layers: handlers, services, database.
 1. Add sphinx documendation.
 2. Check using clean code.
 
+
