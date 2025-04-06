@@ -39,3 +39,4 @@ jobs:
                 echo PRIVATE key
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS
                 ls
+
