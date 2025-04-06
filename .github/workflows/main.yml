@@ -20,9 +20,10 @@ jobs:
       runs-on: ubuntu-latest
       environment: staging
       env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          # SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # HOST_USER: ${{ secrets.HOST_USER }}
           # HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+          SSH_PRIVATE_KEY: ${{ vars.SSH_PRIVATE_KEY }}
           HOST_USER: ${{ vars.HOST_USER }}
           HOST_ADDRESS: ${{ vars.HOST_ADDRESS }}
       steps:
@@ -34,5 +35,6 @@ jobs:
                 echo address $HOST_USER@$HOST_ADDRESS
                 echo $SSH_PRIVATE_KEY >> private_key
                 chmod 600 private_key
+                tail -n 3 private_key
                 ssh -o StrictHostKeyChecking=no -i private_key $HOST_USER@$HOST_ADDRESS
                 ls
